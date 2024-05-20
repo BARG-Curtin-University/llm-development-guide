@@ -13,11 +13,11 @@ author:
       - Software
       - Visualisation
 keywords:
-  - Large Language Models (LLMs)
-  - Data Curation
-  - Model Architecture
-  - Training Techniques
-  - Evaluation Methods
+  - "Large Language Models (LLMs)"
+  - "Data Curation"
+  - "Model Architecture"
+  - "Training Techniques"
+  - "Evaluation Methods"
 abstract: |
   The development of large language models (LLMs) from scratch is a complex and resource-intensive endeavour, often perceived as feasible only for specialised AI research institutions. However, with the rising interest in custom LLMs for specific business and organisational applications, understanding the comprehensive process of building these models has become increasingly relevant. This paper provides a detailed guide on the critical steps involved in developing a foundational LLM, drawing insights from models such as GPT-3, LLaMA, and Falcon. Key aspects covered include data curation, where the quality and diversity of the training data are emphasised; model architecture, focusing on the transformative role of transformer networks and their various configurations; training at scale, which addresses the technical challenges and solutions for efficient large-scale model training; and evaluation, detailing methodologies for assessing model performance across different tasks. This guide aims to equip researchers and practitioners with the knowledge necessary to navigate the intricacies of LLM development and make informed decisions about when such an investment is justified.
 plain-language-summary: | 
