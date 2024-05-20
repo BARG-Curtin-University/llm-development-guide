@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.551">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Michael Borck">
+<meta name="dcterms.date" content="2024-05-20">
+<meta name="keywords" content="Large Language Models (LLMs), Data Curation, Model Architecture, Training Techniques, Evaluation Methods">
+
+<title>Developing Large Language Models from Scratch: A Comprehensive Guide</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script async="" src="https://hypothes.is/embed.js"></script>
+<script>
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    document.body.classList.add('hypothesis-enabled');
+  });
+</script>
+
+
+<meta name="citation_title" content="Developing Large Language Models from Scratch: A Comprehensive Guide">
+<meta name="citation_abstract" content="The development of large language models (LLMs) from scratch is a complex and resource-intensive endeavour, often perceived as feasible only for specialised AI research institutions. However, with the rising interest in custom LLMs for specific business and organisational applications, understanding the comprehensive process of building these models has become increasingly relevant. This paper provides a detailed guide on the critical steps involved in developing a foundational LLM, drawing insights from models such as GPT-3, LLaMA, and Falcon. Key aspects covered include data curation, where the quality and diversity of the training data are emphasised; model architecture, focusing on the transformative role of transformer networks and their various configurations; training at scale, which addresses the technical challenges and solutions for efficient large-scale model training; and evaluation, detailing methodologies for assessing model performance across different tasks. This guide aims to equip researchers and practitioners with the knowledge necessary to navigate the intricacies of LLM development and make informed decisions about when such an investment is justified.
+">
+<meta name="citation_keywords" content="Large Language Models (LLMs),Data Curation,Model Architecture,Training Techniques,Evaluation Methods">
+<meta name="citation_author" content="Michael Borck">
+<meta name="citation_publication_date" content="2024-05-20">
+<meta name="citation_cover_date" content="2024-05-20">
+<meta name="citation_year" content="2024">
+<meta name="citation_online_date" content="2024-05-20">
+<meta name="citation_language" content="en">
+<meta name="citation_journal_title" content="BARG Curtin University">
+<meta name="citation_reference" content="citation_title=BloombergGPT;">
+<meta name="citation_reference" content="citation_title=Llama 2;">
+<meta name="citation_reference" content="citation_title=LLM energy costs;">
+<meta name="citation_reference" content="citation_title=Language models are few-shot learners;,citation_author=Tom Brown;,citation_author=Benjamin Mann;,citation_author=Nick Ryder;,citation_author=Melanie Subbiah;,citation_author=Jared Kaplan;,citation_author=Prafulla Dhariwal;,citation_author=Arvind Neelakantan;,citation_author=Pranav Shyam;,citation_author=Girish Sastry;,citation_author=Amanda Askell;,citation_author=others;,citation_publication_date=2020;,citation_cover_date=2020;,citation_year=2020;,citation_journal_title=arXiv preprint arXiv:2005.14165;">
+<meta name="citation_reference" content="citation_title=Falcon 180b;">
+<meta name="citation_reference" content="citation_title=The pile: An 800GB dataset of diverse text for language modeling;,citation_author=Leo Gao;,citation_author=Stella Biderman;,citation_author=Sidney Black;,citation_author=Laurence Golding;,citation_author=Travis Hoppe;,citation_author=Charles Foster;,citation_author=Jason Phang;,citation_author=Horace He;,citation_author=Ameet Thite;,citation_author=Rishi Nabeshima;,citation_author=others;,citation_publication_date=2020;,citation_cover_date=2020;,citation_year=2020;,citation_journal_title=arXiv preprint arXiv:2101.00027;">
+<meta name="citation_reference" content="citation_title=Alpaca;">
+<meta name="citation_reference" content="citation_title=A survey of large language models;,citation_author=Wayne Xin Zhao;,citation_author=Yuan Zhang;,citation_author=Yichang Zou;,citation_author=Jian-Yun Nie Chen;,citation_publication_date=2023;,citation_cover_date=2023;,citation_year=2023;,citation_journal_title=arXiv preprint arXiv:2303.18223;">
+<meta name="citation_reference" content="citation_title=Deduplicating training data makes language models better;,citation_author=Kenton Lee;,citation_author=Patrick Roit;,citation_author=Yasaman Razeghi;,citation_author=Yi Xu;,citation_author=Sewon Min;,citation_author=Semih Yavuz Mukherjee;,citation_author=Colin Raffel;,citation_author=Fabio Petroni;,citation_author=Luke Zettlemoyer;,citation_author=Mike Lewis;,citation_publication_date=2021;,citation_cover_date=2021;,citation_year=2021;,citation_journal_title=arXiv preprint arXiv:2112.11446;">
+<meta name="citation_reference" content="citation_title=Neural machine translation of rare words with subword units;,citation_author=Rico Sennrich;,citation_author=Barry Haddow;,citation_author=Alexandra Birch;,citation_publication_date=2015;,citation_cover_date=2015;,citation_year=2015;,citation_journal_title=arXiv preprint arXiv:1508.07909;">
+<meta name="citation_reference" content="citation_title=SentencePiece;">
+<meta name="citation_reference" content="citation_title=Tokenizers;">
+<meta name="citation_reference" content="citation_title=Attention is all you need;,citation_author=Ashish Vaswani;,citation_author=Noam Shazeer;,citation_author=Niki Parmar;,citation_author=Jakob Uszkoreit;,citation_author=Llion Jones;,citation_author=Aidan N Gomez;,citation_author=Łukasz Kaiser;,citation_author=Illia Polosukhin;,citation_publication_date=2017;,citation_cover_date=2017;,citation_year=2017;,citation_journal_title=arXiv preprint arXiv:1706.03762;">
+<meta name="citation_reference" content="citation_title=Andrej karpathy lecture;">
+<meta name="citation_reference" content="citation_title=Hugging face NLP course;">
+<meta name="citation_reference" content="citation_title=BERT: Pre-training of deep bidirectional transformers for language understanding;,citation_author=Jacob Devlin;,citation_author=Ming-Wei Chang;,citation_author=Kenton Lee;,citation_author=Kristina Toutanova;,citation_publication_date=2018;,citation_cover_date=2018;,citation_year=2018;,citation_journal_title=arXiv preprint arXiv:1810.04805;">
+<meta name="citation_reference" content="citation_title=BART: Denoising sequence-to-sequence pre-training for natural language generation, translation, and comprehension;,citation_author=Mike Lewis;,citation_author=Yinhan Liu;,citation_author=Naman Goyal;,citation_author=Marjan Ghazvininejad;,citation_author=Abdelrahman Mohamed;,citation_author=Omer Levy;,citation_author=Veselin Stoyanov;,citation_author=Luke Zettlemoyer;,citation_publication_date=2019;,citation_cover_date=2019;,citation_year=2019;,citation_journal_title=arXiv preprint arXiv:1910.13461;">
+<meta name="citation_reference" content="citation_title=Deep residual learning for image recognition;,citation_author=Kaiming He;,citation_author=Xiangyu Zhang;,citation_author=Shaoqing Ren;,citation_author=Jian Sun;,citation_publication_date=2016;,citation_cover_date=2016;,citation_year=2016;,citation_journal_title=arXiv preprint arXiv:1603.05027;">
+<meta name="citation_reference" content="citation_title=Layer normalization;,citation_author=Jimmy Lei Ba;,citation_author=Jamie Ryan Kiros;,citation_author=Geoffrey E Hinton;,citation_publication_date=2016;,citation_cover_date=2016;,citation_year=2016;,citation_journal_title=arXiv preprint arXiv:1607.06450;">
+<meta name="citation_reference" content="citation_title=Self-attention with relative position representations;,citation_author=Peter Shaw;,citation_author=Jakob Uszkoreit;,citation_author=Ashish Vaswani;,citation_publication_date=2018;,citation_cover_date=2018;,citation_year=2018;,citation_journal_title=arXiv preprint arXiv:1803.02155;">
+<meta name="citation_reference" content="citation_title=Training compute-optimal large language models;,citation_author=Jordan Hoffmann;,citation_author=Sebastian Borgeaud;,citation_author=Arthur Mensch;,citation_author=Katie Millican;,citation_author=Jean-Baptiste Lespiau;,citation_author=Alana Lai;,citation_author=John Aslanides;,citation_author=Stephen Henderson;,citation_author=Roman Ring;,citation_author=Daniel Keysers;,citation_author=others;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_journal_title=arXiv preprint arXiv:2203.15556;">
+<meta name="citation_reference" content="citation_title=Trained with mixed precision;">
+<meta name="citation_reference" content="citation_title=DeepSpeed;">
+<meta name="citation_reference" content="citation_title=Weight decay;">
+<meta name="citation_reference" content="citation_title=What is gradient clipping;">
+<meta name="citation_reference" content="citation_title=Scaling laws for neural language models;,citation_author=Jared Kaplan;,citation_author=Sam McCandlish;,citation_author=Tom Henighan;,citation_author=Tom B Brown;,citation_author=Benjamin Chess;,citation_author=Rewon Child;,citation_author=Scott Gray;,citation_author=Alec Radford;,citation_author=Jeffrey Wu;,citation_author=Dario Amodei;,citation_publication_date=2020;,citation_cover_date=2020;,citation_year=2020;,citation_journal_title=arXiv preprint arXiv:2001.08361;">
+<meta name="citation_reference" content="citation_title=Think you have solved question answering? Try ARC, the AI2 reasoning challenge;,citation_author=Peter Clark;,citation_author=Stephen Cowhey;,citation_author=Oren Etzioni;,citation_author=Tushar Khot;,citation_author=Bhavana Mishra;,citation_author=Kyle Richardson;,citation_author=Carissa Schoenick;,citation_author=Oyvind Tafjord;,citation_publication_date=2018;,citation_cover_date=2018;,citation_year=2018;,citation_journal_title=arXiv preprint arXiv:1803.05457;">
+<meta name="citation_reference" content="citation_title=HellaSwag: Can a machine really finish your sentence?;,citation_author=Rowan Zellers;,citation_author=Ari Holtzman;,citation_author=Yonatan Bisk;,citation_author=Ali Farhadi;,citation_author=Yejin Choi;,citation_publication_date=2019;,citation_cover_date=2019;,citation_year=2019;,citation_journal_title=arXiv preprint arXiv:1905.07830;">
+<meta name="citation_reference" content="citation_title=Measuring massive multitask language understanding;,citation_author=Dan Hendrycks;,citation_author=Collin Burns;,citation_author=Saurav Kadavath;,citation_author=Akul Arora;,citation_author=Steven Basart;,citation_author=Eric Tang;,citation_author=Dawn Song;,citation_author=Jacob Steinhardt;,citation_publication_date=2020;,citation_cover_date=2020;,citation_year=2020;,citation_journal_title=arXiv preprint arXiv:2009.03300;">
+<meta name="citation_reference" content="citation_title=TruthfulQA: Measuring how models mimic human falsehoods;,citation_author=Stephanie Lin;,citation_author=Jacob Hilton;,citation_author=Owain Evans;,citation_publication_date=2021;,citation_cover_date=2021;,citation_year=2021;,citation_journal_title=arXiv preprint arXiv:2109.07958;">
+<meta name="citation_reference" content="citation_title=Evaluating MMLU leaderboard;">
+</head>
+
+<body>
+
+<header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Developing Large Language Models from Scratch: A Comprehensive Guide</h1>
+          </div>
+
+    
+    <div class="quarto-title-meta-container">
+      <div class="quarto-title-meta-column-start">
+            <div class="quarto-title-meta-author">
+          <div class="quarto-title-meta-heading">Author</div>
+          <div class="quarto-title-meta-heading">Affiliation</div>
+          
+                <div class="quarto-title-meta-contents">
+            <p class="author">Michael Borck <a href="mailto:michael.borck@curtin.edu.au" class="quarto-title-author-email"><i class="bi bi-envelope"></i></a> <a href="https://orcid.org/0000-0002-0950-6396" class="quarto-title-author-orcid"> <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg=="></a></p>
+          </div>
+                <div class="quarto-title-meta-contents">
+                    <p class="affiliation">
+                        Business Information Systems, Curtin University, Perth Australia
+                      </p>
+                  </div>
+                    </div>
+        
+        <div class="quarto-title-meta">
+
+                      
+                <div>
+            <div class="quarto-title-meta-heading">Published</div>
+            <div class="quarto-title-meta-contents">
+              <p class="date">May 20, 2024</p>
+            </div>
+          </div>
+          
+                
+              </div>
+      </div>
+      <div class="quarto-title-meta-column-end quarto-other-formats-target">
+      <div class="quarto-alternate-formats"><div class="quarto-title-meta-heading">Other Formats</div><div class="quarto-title-meta-contents"><p><a href="index.docx"><i class="bi bi-file-word"></i>MS Word</a></p></div><div class="quarto-title-meta-contents"><p><a href="index-meca.zip" data-meca-link="true"><i class="bi bi-archive"></i>MECA Bundle</a></p></div></div></div>
+    </div>
+
+    <div>
+      <div class="abstract">
+        <div class="block-title">Abstract</div>
+        <p>The development of large language models (LLMs) from scratch is a complex and resource-intensive endeavour, often perceived as feasible only for specialised AI research institutions. However, with the rising interest in custom LLMs for specific business and organisational applications, understanding the comprehensive process of building these models has become increasingly relevant. This paper provides a detailed guide on the critical steps involved in developing a foundational LLM, drawing insights from models such as GPT-3, LLaMA, and Falcon. Key aspects covered include data curation, where the quality and diversity of the training data are emphasised; model architecture, focusing on the transformative role of transformer networks and their various configurations; training at scale, which addresses the technical challenges and solutions for efficient large-scale model training; and evaluation, detailing methodologies for assessing model performance across different tasks. This guide aims to equip researchers and practitioners with the knowledge necessary to navigate the intricacies of LLM development and make informed decisions about when such an investment is justified.</p>
+      </div>
+    </div>
+
+    <div>
+      <div class="keywords">
+        <div class="block-title">Keywords</div>
+        <p>Large Language Models (LLMs), Data Curation, Model Architecture, Training Techniques, Evaluation Methods</p>
+      </div>
+    </div>
+
+    <div class="quarto-other-links-text-target">
+    </div>  </div>
+</header><div id="quarto-content" class="page-columns page-rows-contents page-layout-article toc-left">
+<div id="quarto-sidebar-toc-left" class="sidebar toc-left">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#financial-considerations" id="toc-financial-considerations" class="nav-link" data-scroll-target="#financial-considerations">Financial Considerations</a></li>
+  <li><a href="#key-steps-in-developing-an-llm" id="toc-key-steps-in-developing-an-llm" class="nav-link" data-scroll-target="#key-steps-in-developing-an-llm">Key Steps in Developing an LLM</a>
+  <ul class="collapse">
+  <li><a href="#step-1-data-curation" id="toc-step-1-data-curation" class="nav-link" data-scroll-target="#step-1-data-curation">Step 1: Data Curation</a></li>
+  <li><a href="#step-2-model-architecture" id="toc-step-2-model-architecture" class="nav-link" data-scroll-target="#step-2-model-architecture">Step 2: Model Architecture</a></li>
+  <li><a href="#step-3-training-at-scale" id="toc-step-3-training-at-scale" class="nav-link" data-scroll-target="#step-3-training-at-scale">Step 3: Training at Scale</a></li>
+  <li><a href="#step-4-evaluation" id="toc-step-4-evaluation" class="nav-link" data-scroll-target="#step-4-evaluation">Step 4: Evaluation</a></li>
+  </ul></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a>
+  <ul class="collapse">
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</div>
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+</div>
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+  
+
+
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<p>While prompt engineering, Retrieval-Augmented Generation (RAG), and fine-tuning approaches can handle the majority of LLM use cases, there are situations where it may make sense to build a large language model (LLM) from scratch. This white paper reviews the key aspects of developing a foundational LLM based on the experiences with models such as GPT-3, LLaMA, Falcon, and others.</p>
+<p>Historically, training large-scale language models (10B+ parameters) was an esoteric activity reserved for AI researchers. However, post-ChatGPT, the environment has changed, with businesses and organisations showing interest in developing their custom LLMs <span class="citation" data-cites="bloomberg_gpt">(<a href="#ref-bloomberg_gpt" role="doc-biblioref"><span>“BloombergGPT,”</span> n.d.</a>)</span>. Although this is unnecessary for over 99% of LLM applications, understanding the process and knowing when it makes sense to build such models is beneficial.</p>
+</section>
+<section id="financial-considerations" class="level2">
+<h2 class="anchored" data-anchor-id="financial-considerations">Financial Considerations</h2>
+<p>Before diving into the technical aspects of LLM development, it is crucial to consider the financial costs. Meta’s LLaMA 2 models required about 180,000 GPU hours to train its 7B parameter model and 1,700,000 GPU hours to train the 70B model <span class="citation" data-cites="llama2_paper">(<a href="#ref-llama2_paper" role="doc-biblioref"><span>“Llama 2,”</span> n.d.</a>)</span>. Translating this into commercial cloud computing costs, an NVIDIA A100 GPU, used for training LLaMA 2 models, costs around $1–2 per GPU hour. Therefore, a ~10B parameter model costs about $150,000 to train, while a ~100B parameter model costs approximately $1,500,000.</p>
+<p>Alternatively, one could buy the GPUs instead of renting them. The cost of training would then include the price of the A100 GPUs and the marginal energy costs for model training. An A100 GPU costs about $10,000, and a cluster of 1000 GPUs would amount to approximately $10,000,000. Additionally, with an energy cost of about $100 per megawatt hour and training requiring around 1,000 megawatt hours, the marginal energy cost for training a 100B parameter model is about $100,000 <span class="citation" data-cites="llm_energy_costs">(<a href="#ref-llm_energy_costs" role="doc-biblioref"><span>“LLM Energy Costs,”</span> n.d.</a>)</span>.</p>
+<p>These costs do not include funding a team of ML engineers, data engineers, data scientists, and others needed for model development, which can easily amount to $1,000,000. Hence, training an LLM from scratch is a massive investment, justifiable only if there is a significant potential upside not achievable via prompt engineering or fine-tuning existing models.</p>
+</section>
+<section id="key-steps-in-developing-an-llm" class="level2">
+<h2 class="anchored" data-anchor-id="key-steps-in-developing-an-llm">Key Steps in Developing an LLM</h2>
+<p>The development process of an LLM consists of four key steps:</p>
+<ol type="1">
+<li><strong>Data Curation</strong></li>
+<li><strong>Model Architecture</strong></li>
+<li><strong>Training at Scale</strong></li>
+<li><strong>Evaluation</strong></li>
+</ol>
+<section id="step-1-data-curation" class="level3">
+<h3 class="anchored" data-anchor-id="step-1-data-curation">Step 1: Data Curation</h3>
+<p>The quality of an LLM is driven by the quality of its training data. Popular base models have training sets of substantial size:</p>
+<ul>
+<li>GPT-3 (175B): 0.5T tokens <span class="citation" data-cites="brown2020language">(<a href="#ref-brown2020language" role="doc-biblioref">Brown et al. 2020</a>)</span></li>
+<li>LLaMA (70B): 2T tokens <span class="citation" data-cites="llama2_paper">(<a href="#ref-llama2_paper" role="doc-biblioref"><span>“Llama 2,”</span> n.d.</a>)</span></li>
+<li>Falcon (180B): 3.5T tokens <span class="citation" data-cites="falcon180b_blog">(<a href="#ref-falcon180b_blog" role="doc-biblioref"><span>“Falcon 180b,”</span> n.d.</a>)</span></li>
+</ul>
+<p>A trillion words of text equate to about a million novels or a billion news articles. The internet is the most common data source for LLMs, encompassing web pages, books, scientific articles, code bases, and conversational data. Open datasets like Common Crawl, The Pile <span class="citation" data-cites="gao2020pile">(<a href="#ref-gao2020pile" role="doc-biblioref">Gao et al. 2020</a>)</span>, and others on Hugging Face’s platform are often used. Alternatively, researchers can have an existing LLM generate a high-quality training corpus, as done with Alpaca <span class="citation" data-cites="alpaca_repo">(<a href="#ref-alpaca_repo" role="doc-biblioref"><span>“Alpaca,”</span> n.d.</a>)</span>.</p>
+<p>Preparing the data involves several preprocessing steps:</p>
+<ul>
+<li><strong>Quality Filtering:</strong> Removing low-quality text using classifier-based or heuristic-based approaches <span class="citation" data-cites="zhao2023survey">(<a href="#ref-zhao2023survey" role="doc-biblioref">Zhao et al. 2023</a>)</span>.</li>
+<li><strong>De-duplication:</strong> Ensuring the same text does not bias the model or disrupt the training process <span class="citation" data-cites="lee2021dedup">(<a href="#ref-lee2021dedup" role="doc-biblioref">Lee et al. 2021</a>)</span>.</li>
+<li><strong>Privacy Redaction:</strong> Removing personally identifiable information to avoid unintended exposure of sensitive data.</li>
+<li><strong>Tokenisation:</strong> Translating text into numerical form using algorithms like byte-pair encoding (BPE) <span class="citation" data-cites="sennrich2015neural">(<a href="#ref-sennrich2015neural" role="doc-biblioref">Sennrich, Haddow, and Birch 2015</a>)</span>.</li>
+</ul>
+</section>
+<section id="step-2-model-architecture" class="level3">
+<h3 class="anchored" data-anchor-id="step-2-model-architecture">Step 2: Model Architecture</h3>
+<p>Transformers are the state-of-the-art approach for language modeling <span class="citation" data-cites="vaswani2017attention">(<a href="#ref-vaswani2017attention" role="doc-biblioref">Vaswani et al. 2017</a>)</span>. They consist of two key modules: an encoder and a decoder. These can be standalone or combined, resulting in three types of transformers:</p>
+<ol type="1">
+<li><strong>Encoder-only:</strong> Suitable for tasks requiring input understanding, such as text classification. Example: BERT <span class="citation" data-cites="devlin2018bert">(<a href="#ref-devlin2018bert" role="doc-biblioref">Devlin et al. 2018</a>)</span>.</li>
+<li><strong>Decoder-only:</strong> Used for text generation tasks, like GPT-3, LLaMA, and Falcon <span class="citation" data-cites="zhao2023survey">(<a href="#ref-zhao2023survey" role="doc-biblioref">Zhao et al. 2023</a>, huggingface_nlp_course)</span>.</li>
+<li><strong>Encoder-Decoder:</strong> Combines both modules for tasks like translation and summarisation. Example: BART <span class="citation" data-cites="lewis2019bart">(<a href="#ref-lewis2019bart" role="doc-biblioref">Lewis et al. 2019</a>)</span>.</li>
+</ol>
+<p>Other design choices include:</p>
+<ul>
+<li><strong>Residual Connections:</strong> Improve training stability and performance by allowing intermediate values to bypass hidden layers <span class="citation" data-cites="he2016deep">(<a href="#ref-he2016deep" role="doc-biblioref">He et al. 2016</a>)</span>.</li>
+<li><strong>Layer Normalisation:</strong> Speeds up training and makes it more stable <span class="citation" data-cites="ba2016layer">(<a href="#ref-ba2016layer" role="doc-biblioref">Ba, Kiros, and Hinton 2016</a>)</span>.</li>
+<li><strong>Activation Functions:</strong> Introduce non-linearities to capture complex mappings (e.g., GeLU, ReLU) <span class="citation" data-cites="zhao2023survey">(<a href="#ref-zhao2023survey" role="doc-biblioref">Zhao et al. 2023</a>)</span>.</li>
+<li><strong>Position Embeddings:</strong> Capture token positions in the model’s representation of text <span class="citation" data-cites="vaswani2017attention">(<a href="#ref-vaswani2017attention" role="doc-biblioref">Vaswani et al. 2017, shaw2018self</a>)</span>.</li>
+</ul>
+</section>
+<section id="step-3-training-at-scale" class="level3">
+<h3 class="anchored" data-anchor-id="step-3-training-at-scale">Step 3: Training at Scale</h3>
+<p>LLMs are trained via self-supervised learning, predicting the final token in a sequence based on the preceding ones. Scaling up model training involves techniques like mixed precision training, 3D parallelism, and the sero Redundancy Optimiser (seRO).</p>
+<p><strong>Training Techniques:</strong></p>
+<ul>
+<li><strong>Mixed Precision Training:</strong> Uses both 32-bit and 16-bit floating-point data types to reduce computational costs <span class="citation" data-cites="zhao2023survey">(<a href="#ref-zhao2023survey" role="doc-biblioref">Zhao et al. 2023</a>, nvidia_mixed_precision)</span>.</li>
+<li><strong>Parallelisation:</strong> Distributes training across multiple GPUs using pipeline, model, and data parallelism <span class="citation" data-cites="zhao2023survey">(<a href="#ref-zhao2023survey" role="doc-biblioref">Zhao et al. 2023</a>)</span>.</li>
+<li><strong>sero Redundancy Optimiser (seRO):</strong> Reduces data redundancy in the optimiser state, gradient, or parameter partitioning <span class="citation" data-cites="zhao2023survey">(<a href="#ref-zhao2023survey" role="doc-biblioref">Zhao et al. 2023</a>)</span>.</li>
+</ul>
+<p><strong>Training Stability:</strong></p>
+<ul>
+<li><strong>Checkpointing:</strong> Saves model artifacts to resume training after failures <span class="citation" data-cites="zhao2023survey">(<a href="#ref-zhao2023survey" role="doc-biblioref">Zhao et al. 2023</a>)</span>.</li>
+<li><strong>Weight Decay:</strong> Penalises large parameter values to avoid overfitting <span class="citation" data-cites="weight_decay">(<a href="#ref-weight_decay" role="doc-biblioref"><span>“Weight Decay,”</span> n.d.</a>)</span>.</li>
+<li><strong>Gradient Clipping:</strong> Rescales gradients to prevent the exploding gradient problem <span class="citation" data-cites="gradient_clipping">(<a href="#ref-gradient_clipping" role="doc-biblioref"><span>“What Is Gradient Clipping,”</span> n.d.</a>)</span>.</li>
+</ul>
+<p><strong>Hyperparameters:</strong></p>
+<ul>
+<li><strong>Batch Sise:</strong> Number of samples processed before updating parameters.</li>
+<li><strong>Learning Rate:</strong> Controls optimisation step size.</li>
+<li><strong>Optimiser:</strong> Defines how to update model parameters.</li>
+<li><strong>Dropout:</strong> zeros out a portion of parameters at random to avoid over fitting <span class="citation" data-cites="karpathy_lecture">(<a href="#ref-karpathy_lecture" role="doc-biblioref"><span>“Andrej Karpathy Lecture,”</span> n.d.</a>)</span>.</li>
+</ul>
+</section>
+<section id="step-4-evaluation" class="level3">
+<h3 class="anchored" data-anchor-id="step-4-evaluation">Step 4: Evaluation</h3>
+<p>Model development is iterative, involving repeated evaluation of model performance on a set of tasks. Common benchmarks include:</p>
+<ul>
+<li><strong>ARC:</strong> Grade-school level multiple-choice science questions <span class="citation" data-cites="clark2018think">(<a href="#ref-clark2018think" role="doc-biblioref">Clark et al. 2018</a>)</span>.</li>
+<li><strong>Hellaswag:</strong> Commonsense natural language inference tasks <span class="citation" data-cites="zellers2019hellaswag">(<a href="#ref-zellers2019hellaswag" role="doc-biblioref">Zellers et al. 2019</a>)</span>.</li>
+<li><strong>MMLU:</strong> World knowledge and problem-solving tasks <span class="citation" data-cites="hendrycks2020measuring">(<a href="#ref-hendrycks2020measuring" role="doc-biblioref">Hendrycks et al. 2020</a>)</span>.</li>
+<li><strong>TruthfulQA:</strong> Evaluates model truthfulness against common misconceptions <span class="citation" data-cites="lin2021truthfulqa">(<a href="#ref-lin2021truthfulqa" role="doc-biblioref">Lin, Hilton, and Evans 2021</a>)</span>.</li>
+</ul>
+<p>Evaluations can be done using prompt templates, human evaluation, or NLP metrics like Perplexity, BLEU, or ROGUE scores. An auxiliary fine-tuned LLM can also be used for comparisons, as demonstrated by GPT-judge <span class="citation" data-cites="lin2021truthfulqa">(<a href="#ref-lin2021truthfulqa" role="doc-biblioref">Lin, Hilton, and Evans 2021</a>)</span>.</p>
+</section>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>Building an LLM from scratch involves significant technical and financial investments. However, understanding this process can help determine when such an endeavour is justified and what the key considerations are. Whether leveraging existing models or building new ones, the goal is to develop an AI solution that effectively addresses the target application.</p>
+<section id="references" class="level3">
+<h3 class="anchored" data-anchor-id="references">References</h3>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-alpaca_repo" class="csl-entry" role="listitem">
+<span>“Alpaca.”</span> n.d.
+</div>
+<div id="ref-karpathy_lecture" class="csl-entry" role="listitem">
+<span>“Andrej Karpathy Lecture.”</span> n.d.
+</div>
+<div id="ref-ba2016layer" class="csl-entry" role="listitem">
+Ba, Jimmy Lei, Jamie Ryan Kiros, and Geoffrey E Hinton. 2016. <span>“Layer Normalization.”</span> <em>arXiv Preprint arXiv:1607.06450</em>.
+</div>
+<div id="ref-bloomberg_gpt" class="csl-entry" role="listitem">
+<span>“BloombergGPT.”</span> n.d.
+</div>
+<div id="ref-brown2020language" class="csl-entry" role="listitem">
+Brown, Tom, Benjamin Mann, Nick Ryder, Melanie Subbiah, Jared Kaplan, Prafulla Dhariwal, Arvind Neelakantan, et al. 2020. <span>“Language Models Are Few-Shot Learners.”</span> <em>arXiv Preprint arXiv:2005.14165</em>.
+</div>
+<div id="ref-clark2018think" class="csl-entry" role="listitem">
+Clark, Peter, Stephen Cowhey, Oren Etzioni, Tushar Khot, Bhavana Mishra, Kyle Richardson, Carissa Schoenick, and Oyvind Tafjord. 2018. <span>“Think You Have Solved Question Answering? Try ARC, the AI2 Reasoning Challenge.”</span> <em>arXiv Preprint arXiv:1803.05457</em>.
+</div>
+<div id="ref-devlin2018bert" class="csl-entry" role="listitem">
+Devlin, Jacob, Ming-Wei Chang, Kenton Lee, and Kristina Toutanova. 2018. <span>“BERT: Pre-Training of Deep Bidirectional Transformers for Language Understanding.”</span> <em>arXiv Preprint arXiv:1810.04805</em>.
+</div>
+<div id="ref-falcon180b_blog" class="csl-entry" role="listitem">
+<span>“Falcon 180b.”</span> n.d.
+</div>
+<div id="ref-gao2020pile" class="csl-entry" role="listitem">
+Gao, Leo, Stella Biderman, Sidney Black, Laurence Golding, Travis Hoppe, Charles Foster, Jason Phang, et al. 2020. <span>“The Pile: An 800GB Dataset of Diverse Text for Language Modeling.”</span> <em>arXiv Preprint arXiv:2101.00027</em>.
+</div>
+<div id="ref-he2016deep" class="csl-entry" role="listitem">
+He, Kaiming, Xiangyu Zhang, Shaoqing Ren, and Jian Sun. 2016. <span>“Deep Residual Learning for Image Recognition.”</span> <em>arXiv Preprint arXiv:1603.05027</em>.
+</div>
+<div id="ref-hendrycks2020measuring" class="csl-entry" role="listitem">
+Hendrycks, Dan, Collin Burns, Saurav Kadavath, Akul Arora, Steven Basart, Eric Tang, Dawn Song, and Jacob Steinhardt. 2020. <span>“Measuring Massive Multitask Language Understanding.”</span> <em>arXiv Preprint arXiv:2009.03300</em>.
+</div>
+<div id="ref-lee2021dedup" class="csl-entry" role="listitem">
+Lee, Kenton, Patrick Roit, Yasaman Razeghi, Yi Xu, Sewon Min, Semih Yavuz Mukherjee, Colin Raffel, Fabio Petroni, Luke Zettlemoyer, and Mike Lewis. 2021. <span>“Deduplicating Training Data Makes Language Models Better.”</span> <em>arXiv Preprint arXiv:2112.11446</em>.
+</div>
+<div id="ref-lewis2019bart" class="csl-entry" role="listitem">
+Lewis, Mike, Yinhan Liu, Naman Goyal, Marjan Ghazvininejad, Abdelrahman Mohamed, Omer Levy, Veselin Stoyanov, and Luke Zettlemoyer. 2019. <span>“BART: Denoising Sequence-to-Sequence Pre-Training for Natural Language Generation, Translation, and Comprehension.”</span> <em>arXiv Preprint arXiv:1910.13461</em>.
+</div>
+<div id="ref-lin2021truthfulqa" class="csl-entry" role="listitem">
+Lin, Stephanie, Jacob Hilton, and Owain Evans. 2021. <span>“TruthfulQA: Measuring How Models Mimic Human Falsehoods.”</span> <em>arXiv Preprint arXiv:2109.07958</em>.
+</div>
+<div id="ref-llama2_paper" class="csl-entry" role="listitem">
+<span>“Llama 2.”</span> n.d.
+</div>
+<div id="ref-llm_energy_costs" class="csl-entry" role="listitem">
+<span>“LLM Energy Costs.”</span> n.d.
+</div>
+<div id="ref-sennrich2015neural" class="csl-entry" role="listitem">
+Sennrich, Rico, Barry Haddow, and Alexandra Birch. 2015. <span>“Neural Machine Translation of Rare Words with Subword Units.”</span> <em>arXiv Preprint arXiv:1508.07909</em>.
+</div>
+<div id="ref-vaswani2017attention" class="csl-entry" role="listitem">
+Vaswani, Ashish, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N Gomez, Łukasz Kaiser, and Illia Polosukhin. 2017. <span>“Attention Is All You Need.”</span> <em>arXiv Preprint arXiv:1706.03762</em>.
+</div>
+<div id="ref-weight_decay" class="csl-entry" role="listitem">
+<span>“Weight Decay.”</span> n.d.
+</div>
+<div id="ref-gradient_clipping" class="csl-entry" role="listitem">
+<span>“What Is Gradient Clipping.”</span> n.d.
+</div>
+<div id="ref-zellers2019hellaswag" class="csl-entry" role="listitem">
+Zellers, Rowan, Ari Holtzman, Yonatan Bisk, Ali Farhadi, and Yejin Choi. 2019. <span>“HellaSwag: Can a Machine Really Finish Your Sentence?”</span> <em>arXiv Preprint arXiv:1905.07830</em>.
+</div>
+<div id="ref-zhao2023survey" class="csl-entry" role="listitem">
+Zhao, Wayne Xin, Yuan Zhang, Yichang Zou, and Jian-Yun Nie Chen. 2023. <span>“A Survey of Large Language Models.”</span> <em>arXiv Preprint arXiv:2303.18223</em>.
+</div>
+</div>
+</section>
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{borck2024,
+  author = {Borck, Michael},
+  title = {Developing {Large} {Language} {Models} from {Scratch:} {A}
+    {Comprehensive} {Guide}},
+  date = {2024-05-20},
+  langid = {en},
+  abstract = {The development of large language models (LLMs) from
+    scratch is a complex and resource-intensive endeavour, often
+    perceived as feasible only for specialised AI research institutions.
+    However, with the rising interest in custom LLMs for specific
+    business and organisational applications, understanding the
+    comprehensive process of building these models has become
+    increasingly relevant. This paper provides a detailed guide on the
+    critical steps involved in developing a foundational LLM, drawing
+    insights from models such as GPT-3, LLaMA, and Falcon. Key aspects
+    covered include data curation, where the quality and diversity of
+    the training data are emphasised; model architecture, focusing on
+    the transformative role of transformer networks and their various
+    configurations; training at scale, which addresses the technical
+    challenges and solutions for efficient large-scale model training;
+    and evaluation, detailing methodologies for assessing model
+    performance across different tasks. This guide aims to equip
+    researchers and practitioners with the knowledge necessary to
+    navigate the intricacies of LLM development and make informed
+    decisions about when such an investment is justified.}
+}
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-borck2024" class="csl-entry quarto-appendix-citeas" role="listitem">
+Borck, Michael. 2024. <span>“Developing Large Language Models from
+Scratch: A Comprehensive Guide.”</span> BARG Curtin University. May 20,
+2024.
+</div></div></section></div></main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

@@ -1,0 +1,923 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE article PUBLIC "-//NLM//DTD JATS (Z39.96) Journal Archiving
+and Interchange DTD v1.2 20190208//EN" "JATS-archivearticle1.dtd">
+<article xmlns:mml="http://www.w3.org/1998/Math/MathML" xmlns:xlink="http://www.w3.org/1999/xlink" dtd-version="1.2" article-type="other">
+  <front>
+    <journal-meta>
+      <journal-id/>
+      <journal-title-group>
+        <journal-title>BARG Curtin University</journal-title>
+      </journal-title-group>
+      <issn/>
+      <publisher>
+        <publisher-name/>
+      </publisher>
+    </journal-meta>
+    <article-meta>
+      <title-group>
+        <article-title>Developing Large Language Models from Scratch: A
+Comprehensive Guide</article-title>
+      </title-group>
+      <contrib-group>
+        <contrib contrib-type="author" corresp="yes">
+          <contrib-id contrib-id-type="orcid">0000-0002-0950-6396</contrib-id>
+          <name>
+            <surname>Borck</surname>
+            <given-names>Michael</given-names>
+          </name>
+          <string-name>Michael Borck</string-name>
+          <email>michael.borck@curtin.edu.au</email>
+          <role vocab="https://credit.niso.org" vocab-term="investigation" vocab-term-identifier="https://credit.niso.org/contributor-roles/investigation/">Investigation</role>
+          <role vocab="https://credit.niso.org" vocab-term="project administration" vocab-term-identifier="https://credit.niso.org/contributor-roles/project-administration/">Project
+administration</role>
+          <role vocab="https://credit.niso.org" vocab-term="software" vocab-term-identifier="https://credit.niso.org/contributor-roles/software/">Software</role>
+          <role>Visualisation</role>
+          <xref ref-type="aff" rid="aff-1">a</xref>
+          <xref ref-type="corresp" rid="cor-1">*</xref>
+        </contrib>
+      </contrib-group>
+      <aff id="aff-1">
+        <institution-wrap>
+          <institution>Business Information Systems, Curtin University, Perth
+Australia</institution>
+        </institution-wrap>
+      </aff>
+      <author-notes>
+        <corresp id="cor-1">michael.borck@curtin.edu.au</corresp>
+      </author-notes>
+      <pub-date date-type="pub" publication-format="electronic" iso-8601-date="2024-05-20">
+        <year>2024</year>
+        <month>5</month>
+        <day>20</day>
+      </pub-date>
+      <history/>
+      <abstract>
+        <p>The development of large language models (LLMs) from scratch is a
+complex and resource-intensive endeavour, often perceived as feasible
+only for specialised AI research institutions. However, with the rising
+interest in custom LLMs for specific business and organisational
+applications, understanding the comprehensive process of building these
+models has become increasingly relevant. This paper provides a detailed
+guide on the critical steps involved in developing a foundational LLM,
+drawing insights from models such as GPT-3, LLaMA, and Falcon. Key
+aspects covered include data curation, where the quality and diversity
+of the training data are emphasised; model architecture, focusing on the
+transformative role of transformer networks and their various
+configurations; training at scale, which addresses the technical
+challenges and solutions for efficient large-scale model training; and
+evaluation, detailing methodologies for assessing model performance
+across different tasks. This guide aims to equip researchers and
+practitioners with the knowledge necessary to navigate the intricacies
+of LLM development and make informed decisions about when such an
+investment is justified.</p>
+      </abstract>
+      <kwd-group kwd-group-type="author">
+        <kwd>Large Language Models (LLMs)</kwd>
+        <kwd>Data Curation</kwd>
+        <kwd>Model Architecture</kwd>
+        <kwd>Training Techniques</kwd>
+        <kwd>Evaluation Methods</kwd>
+      </kwd-group>
+    </article-meta>
+  </front>
+  <body>
+    <sec id="introduction">
+      <title>Introduction</title>
+      <p>While prompt engineering, Retrieval-Augmented Generation (RAG), and
+  fine-tuning approaches can handle the majority of LLM use cases, there
+  are situations where it may make sense to build a large language model
+  (LLM) from scratch. This white paper reviews the key aspects of
+  developing a foundational LLM based on the experiences with models
+  such as GPT-3, LLaMA, Falcon, and others.</p>
+      <p>Historically, training large-scale language models (10B+
+  parameters) was an esoteric activity reserved for AI researchers.
+  However, post-ChatGPT, the environment has changed, with businesses
+  and organisations showing interest in developing their custom LLMs
+  (<xref alt="“BloombergGPT,” n.d." rid="ref-bloomberg_gpt" ref-type="bibr">“BloombergGPT,”
+  n.d.</xref>). Although this is unnecessary for over 99% of LLM
+  applications, understanding the process and knowing when it makes
+  sense to build such models is beneficial.</p>
+    </sec>
+    <sec id="financial-considerations">
+      <title>Financial Considerations</title>
+      <p>Before diving into the technical aspects of LLM development, it is
+  crucial to consider the financial costs. Meta’s LLaMA 2 models
+  required about 180,000 GPU hours to train its 7B parameter model and
+  1,700,000 GPU hours to train the 70B model
+  (<xref alt="“Llama 2,” n.d." rid="ref-llama2_paper" ref-type="bibr">“Llama
+  2,” n.d.</xref>). Translating this into commercial cloud computing
+  costs, an NVIDIA A100 GPU, used for training LLaMA 2 models, costs
+  around $1–2 per GPU hour. Therefore, a ~10B parameter model costs
+  about $150,000 to train, while a ~100B parameter model costs
+  approximately $1,500,000.</p>
+      <p>Alternatively, one could buy the GPUs instead of renting them. The
+  cost of training would then include the price of the A100 GPUs and the
+  marginal energy costs for model training. An A100 GPU costs about
+  $10,000, and a cluster of 1000 GPUs would amount to approximately
+  $10,000,000. Additionally, with an energy cost of about $100 per
+  megawatt hour and training requiring around 1,000 megawatt hours, the
+  marginal energy cost for training a 100B parameter model is about
+  $100,000
+  (<xref alt="“LLM Energy Costs,” n.d." rid="ref-llm_energy_costs" ref-type="bibr">“LLM
+  Energy Costs,” n.d.</xref>).</p>
+      <p>These costs do not include funding a team of ML engineers, data
+  engineers, data scientists, and others needed for model development,
+  which can easily amount to $1,000,000. Hence, training an LLM from
+  scratch is a massive investment, justifiable only if there is a
+  significant potential upside not achievable via prompt engineering or
+  fine-tuning existing models.</p>
+    </sec>
+    <sec id="key-steps-in-developing-an-llm">
+      <title>Key Steps in Developing an LLM</title>
+      <p>The development process of an LLM consists of four key steps:</p>
+      <list list-type="order">
+        <list-item>
+          <p>
+            <bold>Data Curation</bold>
+          </p>
+        </list-item>
+        <list-item>
+          <p>
+            <bold>Model Architecture</bold>
+          </p>
+        </list-item>
+        <list-item>
+          <p>
+            <bold>Training at Scale</bold>
+          </p>
+        </list-item>
+        <list-item>
+          <p>
+            <bold>Evaluation</bold>
+          </p>
+        </list-item>
+      </list>
+      <sec id="step-1-data-curation">
+        <title>Step 1: Data Curation</title>
+        <p>The quality of an LLM is driven by the quality of its training
+    data. Popular base models have training sets of substantial
+    size:</p>
+        <list list-type="bullet">
+          <list-item>
+            <p>GPT-3 (175B): 0.5T tokens
+        (<xref alt="Brown et al. 2020" rid="ref-brown2020language" ref-type="bibr">Brown
+        et al. 2020</xref>)</p>
+          </list-item>
+          <list-item>
+            <p>LLaMA (70B): 2T tokens
+        (<xref alt="“Llama 2,” n.d." rid="ref-llama2_paper" ref-type="bibr">“Llama
+        2,” n.d.</xref>)</p>
+          </list-item>
+          <list-item>
+            <p>Falcon (180B): 3.5T tokens
+        (<xref alt="“Falcon 180b,” n.d." rid="ref-falcon180b_blog" ref-type="bibr">“Falcon
+        180b,” n.d.</xref>)</p>
+          </list-item>
+        </list>
+        <p>A trillion words of text equate to about a million novels or a
+    billion news articles. The internet is the most common data source
+    for LLMs, encompassing web pages, books, scientific articles, code
+    bases, and conversational data. Open datasets like Common Crawl, The
+    Pile
+    (<xref alt="Gao et al. 2020" rid="ref-gao2020pile" ref-type="bibr">Gao
+    et al. 2020</xref>), and others on Hugging Face’s platform are often
+    used. Alternatively, researchers can have an existing LLM generate a
+    high-quality training corpus, as done with Alpaca
+    (<xref alt="“Alpaca,” n.d." rid="ref-alpaca_repo" ref-type="bibr">“Alpaca,”
+    n.d.</xref>).</p>
+        <p>Preparing the data involves several preprocessing steps:</p>
+        <list list-type="bullet">
+          <list-item>
+            <p><bold>Quality Filtering:</bold> Removing low-quality text
+        using classifier-based or heuristic-based approaches
+        (<xref alt="Zhao et al. 2023" rid="ref-zhao2023survey" ref-type="bibr">Zhao
+        et al. 2023</xref>).</p>
+          </list-item>
+          <list-item>
+            <p><bold>De-duplication:</bold> Ensuring the same text does not
+        bias the model or disrupt the training process
+        (<xref alt="Lee et al. 2021" rid="ref-lee2021dedup" ref-type="bibr">Lee
+        et al. 2021</xref>).</p>
+          </list-item>
+          <list-item>
+            <p><bold>Privacy Redaction:</bold> Removing personally
+        identifiable information to avoid unintended exposure of
+        sensitive data.</p>
+          </list-item>
+          <list-item>
+            <p><bold>Tokenisation:</bold> Translating text into numerical
+        form using algorithms like byte-pair encoding (BPE)
+        (<xref alt="Sennrich, Haddow, and Birch 2015" rid="ref-sennrich2015neural" ref-type="bibr">Sennrich,
+        Haddow, and Birch 2015</xref>).</p>
+          </list-item>
+        </list>
+      </sec>
+      <sec id="step-2-model-architecture">
+        <title>Step 2: Model Architecture</title>
+        <p>Transformers are the state-of-the-art approach for language
+    modeling
+    (<xref alt="Vaswani et al. 2017" rid="ref-vaswani2017attention" ref-type="bibr">Vaswani
+    et al. 2017</xref>). They consist of two key modules: an encoder and
+    a decoder. These can be standalone or combined, resulting in three
+    types of transformers:</p>
+        <list list-type="order">
+          <list-item>
+            <p><bold>Encoder-only:</bold> Suitable for tasks requiring input
+        understanding, such as text classification. Example: BERT
+        (<xref alt="Devlin et al. 2018" rid="ref-devlin2018bert" ref-type="bibr">Devlin
+        et al. 2018</xref>).</p>
+          </list-item>
+          <list-item>
+            <p><bold>Decoder-only:</bold> Used for text generation tasks,
+        like GPT-3, LLaMA, and Falcon
+        (<xref alt="Zhao et al. 2023" rid="ref-zhao2023survey" ref-type="bibr">Zhao
+        et al. 2023</xref>, huggingface_nlp_course).</p>
+          </list-item>
+          <list-item>
+            <p><bold>Encoder-Decoder:</bold> Combines both modules for tasks
+        like translation and summarisation. Example: BART
+        (<xref alt="Lewis et al. 2019" rid="ref-lewis2019bart" ref-type="bibr">Lewis
+        et al. 2019</xref>).</p>
+          </list-item>
+        </list>
+        <p>Other design choices include:</p>
+        <list list-type="bullet">
+          <list-item>
+            <p><bold>Residual Connections:</bold> Improve training stability
+        and performance by allowing intermediate values to bypass hidden
+        layers
+        (<xref alt="He et al. 2016" rid="ref-he2016deep" ref-type="bibr">He
+        et al. 2016</xref>).</p>
+          </list-item>
+          <list-item>
+            <p><bold>Layer Normalisation:</bold> Speeds up training and
+        makes it more stable
+        (<xref alt="Ba, Kiros, and Hinton 2016" rid="ref-ba2016layer" ref-type="bibr">Ba,
+        Kiros, and Hinton 2016</xref>).</p>
+          </list-item>
+          <list-item>
+            <p><bold>Activation Functions:</bold> Introduce non-linearities
+        to capture complex mappings (e.g., GeLU, ReLU)
+        (<xref alt="Zhao et al. 2023" rid="ref-zhao2023survey" ref-type="bibr">Zhao
+        et al. 2023</xref>).</p>
+          </list-item>
+          <list-item>
+            <p><bold>Position Embeddings:</bold> Capture token positions in
+        the model’s representation of text
+        (<xref alt="Vaswani et al. 2017, shaw2018self" rid="ref-vaswani2017attention" ref-type="bibr">Vaswani
+        et al. 2017, shaw2018self</xref>).</p>
+          </list-item>
+        </list>
+      </sec>
+      <sec id="step-3-training-at-scale">
+        <title>Step 3: Training at Scale</title>
+        <p>LLMs are trained via self-supervised learning, predicting the
+    final token in a sequence based on the preceding ones. Scaling up
+    model training involves techniques like mixed precision training, 3D
+    parallelism, and the sero Redundancy Optimiser (seRO).</p>
+        <p>
+          <bold>Training Techniques:</bold>
+        </p>
+        <list list-type="bullet">
+          <list-item>
+            <p><bold>Mixed Precision Training:</bold> Uses both 32-bit and
+        16-bit floating-point data types to reduce computational costs
+        (<xref alt="Zhao et al. 2023" rid="ref-zhao2023survey" ref-type="bibr">Zhao
+        et al. 2023</xref>, nvidia_mixed_precision).</p>
+          </list-item>
+          <list-item>
+            <p><bold>Parallelisation:</bold> Distributes training across
+        multiple GPUs using pipeline, model, and data parallelism
+        (<xref alt="Zhao et al. 2023" rid="ref-zhao2023survey" ref-type="bibr">Zhao
+        et al. 2023</xref>).</p>
+          </list-item>
+          <list-item>
+            <p><bold>sero Redundancy Optimiser (seRO):</bold> Reduces data
+        redundancy in the optimiser state, gradient, or parameter
+        partitioning
+        (<xref alt="Zhao et al. 2023" rid="ref-zhao2023survey" ref-type="bibr">Zhao
+        et al. 2023</xref>).</p>
+          </list-item>
+        </list>
+        <p>
+          <bold>Training Stability:</bold>
+        </p>
+        <list list-type="bullet">
+          <list-item>
+            <p><bold>Checkpointing:</bold> Saves model artifacts to resume
+        training after failures
+        (<xref alt="Zhao et al. 2023" rid="ref-zhao2023survey" ref-type="bibr">Zhao
+        et al. 2023</xref>).</p>
+          </list-item>
+          <list-item>
+            <p><bold>Weight Decay:</bold> Penalises large parameter values
+        to avoid overfitting
+        (<xref alt="“Weight Decay,” n.d." rid="ref-weight_decay" ref-type="bibr">“Weight
+        Decay,” n.d.</xref>).</p>
+          </list-item>
+          <list-item>
+            <p><bold>Gradient Clipping:</bold> Rescales gradients to prevent
+        the exploding gradient problem
+        (<xref alt="“What Is Gradient Clipping,” n.d." rid="ref-gradient_clipping" ref-type="bibr">“What
+        Is Gradient Clipping,” n.d.</xref>).</p>
+          </list-item>
+        </list>
+        <p>
+          <bold>Hyperparameters:</bold>
+        </p>
+        <list list-type="bullet">
+          <list-item>
+            <p><bold>Batch Sise:</bold> Number of samples processed before
+        updating parameters.</p>
+          </list-item>
+          <list-item>
+            <p><bold>Learning Rate:</bold> Controls optimisation step
+        size.</p>
+          </list-item>
+          <list-item>
+            <p><bold>Optimiser:</bold> Defines how to update model
+        parameters.</p>
+          </list-item>
+          <list-item>
+            <p><bold>Dropout:</bold> zeros out a portion of parameters at
+        random to avoid over fitting
+        (<xref alt="“Andrej Karpathy Lecture,” n.d." rid="ref-karpathy_lecture" ref-type="bibr">“Andrej
+        Karpathy Lecture,” n.d.</xref>).</p>
+          </list-item>
+        </list>
+      </sec>
+      <sec id="step-4-evaluation">
+        <title>Step 4: Evaluation</title>
+        <p>Model development is iterative, involving repeated evaluation of
+    model performance on a set of tasks. Common benchmarks include:</p>
+        <list list-type="bullet">
+          <list-item>
+            <p><bold>ARC:</bold> Grade-school level multiple-choice science
+        questions
+        (<xref alt="Clark et al. 2018" rid="ref-clark2018think" ref-type="bibr">Clark
+        et al. 2018</xref>).</p>
+          </list-item>
+          <list-item>
+            <p><bold>Hellaswag:</bold> Commonsense natural language
+        inference tasks
+        (<xref alt="Zellers et al. 2019" rid="ref-zellers2019hellaswag" ref-type="bibr">Zellers
+        et al. 2019</xref>).</p>
+          </list-item>
+          <list-item>
+            <p><bold>MMLU:</bold> World knowledge and problem-solving tasks
+        (<xref alt="Hendrycks et al. 2020" rid="ref-hendrycks2020measuring" ref-type="bibr">Hendrycks
+        et al. 2020</xref>).</p>
+          </list-item>
+          <list-item>
+            <p><bold>TruthfulQA:</bold> Evaluates model truthfulness against
+        common misconceptions
+        (<xref alt="Lin, Hilton, and Evans 2021" rid="ref-lin2021truthfulqa" ref-type="bibr">Lin,
+        Hilton, and Evans 2021</xref>).</p>
+          </list-item>
+        </list>
+        <p>Evaluations can be done using prompt templates, human evaluation,
+    or NLP metrics like Perplexity, BLEU, or ROGUE scores. An auxiliary
+    fine-tuned LLM can also be used for comparisons, as demonstrated by
+    GPT-judge
+    (<xref alt="Lin, Hilton, and Evans 2021" rid="ref-lin2021truthfulqa" ref-type="bibr">Lin,
+    Hilton, and Evans 2021</xref>).</p>
+      </sec>
+    </sec>
+    <sec id="conclusion">
+      <title>Conclusion</title>
+      <p>Building an LLM from scratch involves significant technical and
+  financial investments. However, understanding this process can help
+  determine when such an endeavour is justified and what the key
+  considerations are. Whether leveraging existing models or building new
+  ones, the goal is to develop an AI solution that effectively addresses
+  the target application.</p>
+      <sec id="references">
+        <title>References</title>
+        <ref-list>
+          <ref id="ref-bloomberg_gpt">
+            <element-citation publication-type="article-journal">
+              <article-title>BloombergGPT</article-title>
+            </element-citation>
+          </ref>
+          <ref id="ref-llama2_paper">
+            <element-citation publication-type="article-journal">
+              <article-title>Llama 2</article-title>
+            </element-citation>
+          </ref>
+          <ref id="ref-llm_energy_costs">
+            <element-citation publication-type="article-journal">
+              <article-title>LLM energy costs</article-title>
+            </element-citation>
+          </ref>
+          <ref id="ref-brown2020language">
+            <element-citation publication-type="article-journal">
+              <person-group person-group-type="author">
+                <name>
+                  <surname>Brown</surname>
+                  <given-names>Tom</given-names>
+                </name>
+                <name>
+                  <surname>Mann</surname>
+                  <given-names>Benjamin</given-names>
+                </name>
+                <name>
+                  <surname>Ryder</surname>
+                  <given-names>Nick</given-names>
+                </name>
+                <name>
+                  <surname>Subbiah</surname>
+                  <given-names>Melanie</given-names>
+                </name>
+                <name>
+                  <surname>Kaplan</surname>
+                  <given-names>Jared</given-names>
+                </name>
+                <name>
+                  <surname>Dhariwal</surname>
+                  <given-names>Prafulla</given-names>
+                </name>
+                <name>
+                  <surname>Neelakantan</surname>
+                  <given-names>Arvind</given-names>
+                </name>
+                <name>
+                  <surname>Shyam</surname>
+                  <given-names>Pranav</given-names>
+                </name>
+                <name>
+                  <surname>Sastry</surname>
+                  <given-names>Girish</given-names>
+                </name>
+                <name>
+                  <surname>Askell</surname>
+                  <given-names>Amanda</given-names>
+                </name>
+                <etal/>
+              </person-group>
+              <article-title>Language models are few-shot learners</article-title>
+              <source>arXiv preprint arXiv:2005.14165</source>
+              <year iso-8601-date="2020">2020</year>
+            </element-citation>
+          </ref>
+          <ref id="ref-falcon180b_blog">
+            <element-citation publication-type="article-journal">
+              <article-title>Falcon 180b</article-title>
+            </element-citation>
+          </ref>
+          <ref id="ref-gao2020pile">
+            <element-citation publication-type="article-journal">
+              <person-group person-group-type="author">
+                <name>
+                  <surname>Gao</surname>
+                  <given-names>Leo</given-names>
+                </name>
+                <name>
+                  <surname>Biderman</surname>
+                  <given-names>Stella</given-names>
+                </name>
+                <name>
+                  <surname>Black</surname>
+                  <given-names>Sidney</given-names>
+                </name>
+                <name>
+                  <surname>Golding</surname>
+                  <given-names>Laurence</given-names>
+                </name>
+                <name>
+                  <surname>Hoppe</surname>
+                  <given-names>Travis</given-names>
+                </name>
+                <name>
+                  <surname>Foster</surname>
+                  <given-names>Charles</given-names>
+                </name>
+                <name>
+                  <surname>Phang</surname>
+                  <given-names>Jason</given-names>
+                </name>
+                <name>
+                  <surname>He</surname>
+                  <given-names>Horace</given-names>
+                </name>
+                <name>
+                  <surname>Thite</surname>
+                  <given-names>Ameet</given-names>
+                </name>
+                <name>
+                  <surname>Nabeshima</surname>
+                  <given-names>Rishi</given-names>
+                </name>
+                <etal/>
+              </person-group>
+              <article-title>The pile: An 800GB dataset of diverse text for language modeling</article-title>
+              <source>arXiv preprint arXiv:2101.00027</source>
+              <year iso-8601-date="2020">2020</year>
+            </element-citation>
+          </ref>
+          <ref id="ref-alpaca_repo">
+            <element-citation>
+              <article-title>Alpaca</article-title>
+            </element-citation>
+          </ref>
+          <ref id="ref-zhao2023survey">
+            <element-citation publication-type="article-journal">
+              <person-group person-group-type="author">
+                <name>
+                  <surname>Zhao</surname>
+                  <given-names>Wayne Xin</given-names>
+                </name>
+                <name>
+                  <surname>Zhang</surname>
+                  <given-names>Yuan</given-names>
+                </name>
+                <name>
+                  <surname>Zou</surname>
+                  <given-names>Yichang</given-names>
+                </name>
+                <name>
+                  <surname>Chen</surname>
+                  <given-names>Jian-Yun Nie</given-names>
+                </name>
+              </person-group>
+              <article-title>A survey of large language models</article-title>
+              <source>arXiv preprint arXiv:2303.18223</source>
+              <year iso-8601-date="2023">2023</year>
+            </element-citation>
+          </ref>
+          <ref id="ref-lee2021dedup">
+            <element-citation publication-type="article-journal">
+              <person-group person-group-type="author">
+                <name>
+                  <surname>Lee</surname>
+                  <given-names>Kenton</given-names>
+                </name>
+                <name>
+                  <surname>Roit</surname>
+                  <given-names>Patrick</given-names>
+                </name>
+                <name>
+                  <surname>Razeghi</surname>
+                  <given-names>Yasaman</given-names>
+                </name>
+                <name>
+                  <surname>Xu</surname>
+                  <given-names>Yi</given-names>
+                </name>
+                <name>
+                  <surname>Min</surname>
+                  <given-names>Sewon</given-names>
+                </name>
+                <name>
+                  <surname>Mukherjee</surname>
+                  <given-names>Semih Yavuz</given-names>
+                </name>
+                <name>
+                  <surname>Raffel</surname>
+                  <given-names>Colin</given-names>
+                </name>
+                <name>
+                  <surname>Petroni</surname>
+                  <given-names>Fabio</given-names>
+                </name>
+                <name>
+                  <surname>Zettlemoyer</surname>
+                  <given-names>Luke</given-names>
+                </name>
+                <name>
+                  <surname>Lewis</surname>
+                  <given-names>Mike</given-names>
+                </name>
+              </person-group>
+              <article-title>Deduplicating training data makes language models better</article-title>
+              <source>arXiv preprint arXiv:2112.11446</source>
+              <year iso-8601-date="2021">2021</year>
+            </element-citation>
+          </ref>
+          <ref id="ref-sennrich2015neural">
+            <element-citation publication-type="article-journal">
+              <person-group person-group-type="author">
+                <name>
+                  <surname>Sennrich</surname>
+                  <given-names>Rico</given-names>
+                </name>
+                <name>
+                  <surname>Haddow</surname>
+                  <given-names>Barry</given-names>
+                </name>
+                <name>
+                  <surname>Birch</surname>
+                  <given-names>Alexandra</given-names>
+                </name>
+              </person-group>
+              <article-title>Neural machine translation of rare words with subword units</article-title>
+              <source>arXiv preprint arXiv:1508.07909</source>
+              <year iso-8601-date="2015">2015</year>
+            </element-citation>
+          </ref>
+          <ref id="ref-vaswani2017attention">
+            <element-citation publication-type="article-journal">
+              <person-group person-group-type="author">
+                <name>
+                  <surname>Vaswani</surname>
+                  <given-names>Ashish</given-names>
+                </name>
+                <name>
+                  <surname>Shazeer</surname>
+                  <given-names>Noam</given-names>
+                </name>
+                <name>
+                  <surname>Parmar</surname>
+                  <given-names>Niki</given-names>
+                </name>
+                <name>
+                  <surname>Uszkoreit</surname>
+                  <given-names>Jakob</given-names>
+                </name>
+                <name>
+                  <surname>Jones</surname>
+                  <given-names>Llion</given-names>
+                </name>
+                <name>
+                  <surname>Gomez</surname>
+                  <given-names>Aidan N</given-names>
+                </name>
+                <name>
+                  <surname>Kaiser</surname>
+                  <given-names>Łukasz</given-names>
+                </name>
+                <name>
+                  <surname>Polosukhin</surname>
+                  <given-names>Illia</given-names>
+                </name>
+              </person-group>
+              <article-title>Attention is all you need</article-title>
+              <source>arXiv preprint arXiv:1706.03762</source>
+              <year iso-8601-date="2017">2017</year>
+            </element-citation>
+          </ref>
+          <ref id="ref-karpathy_lecture">
+            <element-citation>
+              <article-title>Andrej karpathy lecture</article-title>
+            </element-citation>
+          </ref>
+          <ref id="ref-devlin2018bert">
+            <element-citation publication-type="article-journal">
+              <person-group person-group-type="author">
+                <name>
+                  <surname>Devlin</surname>
+                  <given-names>Jacob</given-names>
+                </name>
+                <name>
+                  <surname>Chang</surname>
+                  <given-names>Ming-Wei</given-names>
+                </name>
+                <name>
+                  <surname>Lee</surname>
+                  <given-names>Kenton</given-names>
+                </name>
+                <name>
+                  <surname>Toutanova</surname>
+                  <given-names>Kristina</given-names>
+                </name>
+              </person-group>
+              <article-title>BERT: Pre-training of deep bidirectional transformers for language understanding</article-title>
+              <source>arXiv preprint arXiv:1810.04805</source>
+              <year iso-8601-date="2018">2018</year>
+            </element-citation>
+          </ref>
+          <ref id="ref-lewis2019bart">
+            <element-citation publication-type="article-journal">
+              <person-group person-group-type="author">
+                <name>
+                  <surname>Lewis</surname>
+                  <given-names>Mike</given-names>
+                </name>
+                <name>
+                  <surname>Liu</surname>
+                  <given-names>Yinhan</given-names>
+                </name>
+                <name>
+                  <surname>Goyal</surname>
+                  <given-names>Naman</given-names>
+                </name>
+                <name>
+                  <surname>Ghazvininejad</surname>
+                  <given-names>Marjan</given-names>
+                </name>
+                <name>
+                  <surname>Mohamed</surname>
+                  <given-names>Abdelrahman</given-names>
+                </name>
+                <name>
+                  <surname>Levy</surname>
+                  <given-names>Omer</given-names>
+                </name>
+                <name>
+                  <surname>Stoyanov</surname>
+                  <given-names>Veselin</given-names>
+                </name>
+                <name>
+                  <surname>Zettlemoyer</surname>
+                  <given-names>Luke</given-names>
+                </name>
+              </person-group>
+              <article-title>BART: Denoising sequence-to-sequence pre-training for natural language generation, translation, and comprehension</article-title>
+              <source>arXiv preprint arXiv:1910.13461</source>
+              <year iso-8601-date="2019">2019</year>
+            </element-citation>
+          </ref>
+          <ref id="ref-he2016deep">
+            <element-citation publication-type="article-journal">
+              <person-group person-group-type="author">
+                <name>
+                  <surname>He</surname>
+                  <given-names>Kaiming</given-names>
+                </name>
+                <name>
+                  <surname>Zhang</surname>
+                  <given-names>Xiangyu</given-names>
+                </name>
+                <name>
+                  <surname>Ren</surname>
+                  <given-names>Shaoqing</given-names>
+                </name>
+                <name>
+                  <surname>Sun</surname>
+                  <given-names>Jian</given-names>
+                </name>
+              </person-group>
+              <article-title>Deep residual learning for image recognition</article-title>
+              <source>arXiv preprint arXiv:1603.05027</source>
+              <year iso-8601-date="2016">2016</year>
+            </element-citation>
+          </ref>
+          <ref id="ref-ba2016layer">
+            <element-citation publication-type="article-journal">
+              <person-group person-group-type="author">
+                <name>
+                  <surname>Ba</surname>
+                  <given-names>Jimmy Lei</given-names>
+                </name>
+                <name>
+                  <surname>Kiros</surname>
+                  <given-names>Jamie Ryan</given-names>
+                </name>
+                <name>
+                  <surname>Hinton</surname>
+                  <given-names>Geoffrey E</given-names>
+                </name>
+              </person-group>
+              <article-title>Layer normalization</article-title>
+              <source>arXiv preprint arXiv:1607.06450</source>
+              <year iso-8601-date="2016">2016</year>
+            </element-citation>
+          </ref>
+          <ref id="ref-weight_decay">
+            <element-citation>
+              <article-title>Weight decay</article-title>
+            </element-citation>
+          </ref>
+          <ref id="ref-gradient_clipping">
+            <element-citation>
+              <article-title>What is gradient clipping</article-title>
+            </element-citation>
+          </ref>
+          <ref id="ref-clark2018think">
+            <element-citation publication-type="article-journal">
+              <person-group person-group-type="author">
+                <name>
+                  <surname>Clark</surname>
+                  <given-names>Peter</given-names>
+                </name>
+                <name>
+                  <surname>Cowhey</surname>
+                  <given-names>Stephen</given-names>
+                </name>
+                <name>
+                  <surname>Etzioni</surname>
+                  <given-names>Oren</given-names>
+                </name>
+                <name>
+                  <surname>Khot</surname>
+                  <given-names>Tushar</given-names>
+                </name>
+                <name>
+                  <surname>Mishra</surname>
+                  <given-names>Bhavana</given-names>
+                </name>
+                <name>
+                  <surname>Richardson</surname>
+                  <given-names>Kyle</given-names>
+                </name>
+                <name>
+                  <surname>Schoenick</surname>
+                  <given-names>Carissa</given-names>
+                </name>
+                <name>
+                  <surname>Tafjord</surname>
+                  <given-names>Oyvind</given-names>
+                </name>
+              </person-group>
+              <article-title>Think you have solved question answering? Try ARC, the AI2 reasoning challenge</article-title>
+              <source>arXiv preprint arXiv:1803.05457</source>
+              <year iso-8601-date="2018">2018</year>
+            </element-citation>
+          </ref>
+          <ref id="ref-zellers2019hellaswag">
+            <element-citation publication-type="article-journal">
+              <person-group person-group-type="author">
+                <name>
+                  <surname>Zellers</surname>
+                  <given-names>Rowan</given-names>
+                </name>
+                <name>
+                  <surname>Holtzman</surname>
+                  <given-names>Ari</given-names>
+                </name>
+                <name>
+                  <surname>Bisk</surname>
+                  <given-names>Yonatan</given-names>
+                </name>
+                <name>
+                  <surname>Farhadi</surname>
+                  <given-names>Ali</given-names>
+                </name>
+                <name>
+                  <surname>Choi</surname>
+                  <given-names>Yejin</given-names>
+                </name>
+              </person-group>
+              <article-title>HellaSwag: Can a machine really finish your sentence?</article-title>
+              <source>arXiv preprint arXiv:1905.07830</source>
+              <year iso-8601-date="2019">2019</year>
+            </element-citation>
+          </ref>
+          <ref id="ref-hendrycks2020measuring">
+            <element-citation publication-type="article-journal">
+              <person-group person-group-type="author">
+                <name>
+                  <surname>Hendrycks</surname>
+                  <given-names>Dan</given-names>
+                </name>
+                <name>
+                  <surname>Burns</surname>
+                  <given-names>Collin</given-names>
+                </name>
+                <name>
+                  <surname>Kadavath</surname>
+                  <given-names>Saurav</given-names>
+                </name>
+                <name>
+                  <surname>Arora</surname>
+                  <given-names>Akul</given-names>
+                </name>
+                <name>
+                  <surname>Basart</surname>
+                  <given-names>Steven</given-names>
+                </name>
+                <name>
+                  <surname>Tang</surname>
+                  <given-names>Eric</given-names>
+                </name>
+                <name>
+                  <surname>Song</surname>
+                  <given-names>Dawn</given-names>
+                </name>
+                <name>
+                  <surname>Steinhardt</surname>
+                  <given-names>Jacob</given-names>
+                </name>
+              </person-group>
+              <article-title>Measuring massive multitask language understanding</article-title>
+              <source>arXiv preprint arXiv:2009.03300</source>
+              <year iso-8601-date="2020">2020</year>
+            </element-citation>
+          </ref>
+          <ref id="ref-lin2021truthfulqa">
+            <element-citation publication-type="article-journal">
+              <person-group person-group-type="author">
+                <name>
+                  <surname>Lin</surname>
+                  <given-names>Stephanie</given-names>
+                </name>
+                <name>
+                  <surname>Hilton</surname>
+                  <given-names>Jacob</given-names>
+                </name>
+                <name>
+                  <surname>Evans</surname>
+                  <given-names>Owain</given-names>
+                </name>
+              </person-group>
+              <article-title>TruthfulQA: Measuring how models mimic human falsehoods</article-title>
+              <source>arXiv preprint arXiv:2109.07958</source>
+              <year iso-8601-date="2021">2021</year>
+            </element-citation>
+          </ref>
+        </ref-list>
+      </sec>
+    </sec>
+  </body>
+  <back>
+</back>
+</article>
