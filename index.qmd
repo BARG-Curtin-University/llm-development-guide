@@ -13,228 +13,39 @@ author:
       - Software
       - Visualisation
 keywords:
-abstract: | 
+  - Large Language Models (LLMs)
+  - Data Curation
+  - Model Architecture
+  - Training Techniques
+  - Evaluation Methods
+abstract: |
+  The development of large language models (LLMs) from scratch is a complex and resource-intensive endeavour, often perceived as feasible only for specialised AI research institutions. However, with the rising interest in custom LLMs for specific business and organisational applications, understanding the comprehensive process of building these models has become increasingly relevant. This paper provides a detailed guide on the critical steps involved in developing a foundational LLM, drawing insights from models such as GPT-3, LLaMA, and Falcon. Key aspects covered include data curation, where the quality and diversity of the training data are emphasised; model architecture, focusing on the transformative role of transformer networks and their various configurations; training at scale, which addresses the technical challenges and solutions for efficient large-scale model training; and evaluation, detailing methodologies for assessing model performance across different tasks. This guide aims to equip researchers and practitioners with the knowledge necessary to navigate the intricacies of LLM development and make informed decisions about when such an investment is justified.
 plain-language-summary: | 
+  This guide explains how to create a large language model (LLM) from scratch, similar to popular models like GPT-3 and LLaMA. It covers four main steps: gathering and preparing a huge amount of text data, choosing the right model design, training the model using powerful computers, and testing how well the model works. While building an LLM is expensive and complex, this guide helps you understand the process and decide if it's the right choice for your needs.
 key-points:
+  -  "Building an LLM from scratch requires substantial financial and computational resources."
+  -  "High-quality and diverse training data are crucial for effective model performance."
+  -  "Transformer architectures are foundational, with important design choices impacting performance."
+  -  "Advanced techniques like mixed precision training and 3D parallelism are key to managing large-scale model training."
+  -  "Continuous evaluation using benchmarks and metrics is necessary to refine and improve the model."
 date: last-modified
 bibliography: references.bib
 citation:
   container-title: BARG Curtin University
-number-sections: true
+number-sections: false
 ---
 
-
-Sure, here is the BibTeX file for the references and the updated document with in-text references using BibTeX keys.
-
-## BibTeX File
-
-```bibtex
-@article{bloomberg_gpt,
-  title={BloombergGPT},
-  note={Paper}
-}
-
-@article{llama2_paper,
-  title={Llama 2},
-  note={Paper}
-}
-
-@article{llm_energy_costs,
-  title={LLM Energy Costs},
-  note={}
-}
-
-@article{brown2020language,
-  title={Language models are few-shot learners},
-  author={Brown, Tom and Mann, Benjamin and Ryder, Nick and Subbiah, Melanie and Kaplan, Jared and Dhariwal, Prafulla and Neelakantan, Arvind and Shyam, Pranav and Sastry, Girish and Askell, Amanda and others},
-  journal={arXiv preprint arXiv:2005.14165},
-  year={2020}
-}
-
-@article{falcon180b_blog,
-  title={Falcon 180b},
-  note={Blog}
-}
-
-@article{gao2020pile,
-  title={The Pile: An 800GB dataset of diverse text for language modeling},
-  author={Gao, Leo and Biderman, Stella and Black, Sidney and Golding, Laurence and Hoppe, Travis and Foster, Charles and Phang, Jason and He, Horace and Thite, Ameet and Nabeshima, Rishi and others},
-  journal={arXiv preprint arXiv:2101.00027},
-  year={2020}
-}
-
-@misc{alpaca_repo,
-  title={Alpaca},
-  note={Repo}
-}
-
-@article{zhao2023survey,
-  title={A survey of large language models},
-  author={Zhao, Wayne Xin and Zhang, Yuan and Zou, Yichang and Chen, Jian-Yun Nie},
-  journal={arXiv preprint arXiv:2303.18223},
-  year={2023}
-}
-
-@article{lee2021dedup,
-  title={Deduplicating training data makes language models better},
-  author={Lee, Kenton and Roit, Patrick and Razeghi, Yasaman and Xu, Yi and Min, Sewon and Mukherjee, Semih Yavuz and Raffel, Colin and Petroni, Fabio and Zettlemoyer, Luke and Lewis, Mike},
-  journal={arXiv preprint arXiv:2112.11446},
-  year={2021}
-}
-
-@article{sennrich2015neural,
-  title={Neural machine translation of rare words with subword units},
-  author={Sennrich, Rico and Haddow, Barry and Birch, Alexandra},
-  journal={arXiv preprint arXiv:1508.07909},
-  year={2015}
-}
-
-@misc{sentencepiece_repo,
-  title={SentencePiece},
-  note={Repo}
-}
-
-@misc{tokenizers_doc,
-  title={Tokenizers},
-  note={Doc}
-}
-
-@article{vaswani2017attention,
-  title={Attention is all you need},
-  author={Vaswani, Ashish and Shazeer, Noam and Parmar, Niki and Uszkoreit, Jakob and Jones, Llion and Gomez, Aidan N and Kaiser, {\L}ukasz and Polosukhin, Illia},
-  journal={arXiv preprint arXiv:1706.03762},
-  year={2017}
-}
-
-@misc{karpathy_lecture,
-  title={Andrej Karpathy Lecture},
-  note={}
-}
-
-@misc{huggingface_nlp_course,
-  title={Hugging Face NLP Course},
-  note={}
-}
-
-@article{devlin2018bert,
-  title={BERT: Pre-training of deep bidirectional transformers for language understanding},
-  author={Devlin, Jacob and Chang, Ming-Wei and Lee, Kenton and Toutanova, Kristina},
-  journal={arXiv preprint arXiv:1810.04805},
-  year={2018}
-}
-
-@article{lewis2019bart,
-  title={BART: Denoising sequence-to-sequence pre-training for natural language generation, translation, and comprehension},
-  author={Lewis, Mike and Liu, Yinhan and Goyal, Naman and Ghazvininejad, Marjan and Mohamed, Abdelrahman and Levy, Omer and Stoyanov, Veselin and Zettlemoyer, Luke},
-  journal={arXiv preprint arXiv:1910.13461},
-  year={2019}
-}
-
-@article{he2016deep,
-  title={Deep residual learning for image recognition},
-  author={He, Kaiming and Zhang, Xiangyu and Ren, Shaoqing and Sun, Jian},
-  journal={arXiv preprint arXiv:1603.05027},
-  year={2016}
-}
-
-@article{ba2016layer,
-  title={Layer normalization},
-  author={Ba, Jimmy Lei and Kiros, Jamie Ryan and Hinton, Geoffrey E},
-  journal={arXiv preprint arXiv:1607.06450},
-  year={2016}
-}
-
-@article{shaw2018self,
-  title={Self-attention with relative position representations},
-  author={Shaw, Peter and Uszkoreit, Jakob and Vaswani, Ashish},
-  journal={arXiv preprint arXiv:1803.02155},
-  year={2018}
-}
-
-@article{hoffmann2022training,
-  title={Training Compute-Optimal Large Language Models},
-  author={Hoffmann, Jordan and Borgeaud, Sebastian and Mensch, Arthur and Millican, Katie and Lespiau, Jean-Baptiste and Lai, Alana and Aslanides, John and Henderson, Stephen and Ring, Roman and Keysers, Daniel and others},
-  journal={arXiv preprint arXiv:2203.15556},
-  year={2022}
-}
-
-@misc{nvidia_mixed_precision,
-  title={Trained with Mixed Precision},
-  note={Nvidia Doc}
-}
-
-@misc{deepspeed_doc,
-  title={DeepSpeed},
-  note={Doc}
-}
-
-@misc{weight_decay,
-  title={Weight Decay},
-  note={https://paperswithcode.com/method/weight-decay}
-}
-
-@misc{gradient_clipping,
-  title={What is Gradient Clipping},
-  note={https://towardsdatascience.com/what-is-gradient-clipping-b8e815cdfb48}
-}
-
-@article{kaplan2020scaling,
-  title={Scaling laws for neural language models},
-  author={Kaplan, Jared and McCandlish, Sam and Henighan, Tom and Brown, Tom B and Chess, Benjamin and Child, Rewon and Gray, Scott and Radford, Alec and Wu, Jeffrey and Amodei, Dario},
-  journal={arXiv preprint arXiv:2001.08361},
-  year={2020}
-}
-
-@article{clark2018think,
-  title={Think you have solved question answering? Try ARC, the AI2 reasoning challenge},
-  author={Clark, Peter and Cowhey, Stephen and Etzioni, Oren and Khot, Tushar and Mishra, Bhavana and Richardson, Kyle and Schoenick, Carissa and Tafjord, Oyvind},
-  journal={arXiv preprint arXiv:1803.05457},
-  year={2018}
-}
-
-@article{zellers2019hellaswag,
-  title={HellaSwag: Can a machine really finish your sentence?},
-  author={Zellers, Rowan and Holtzman, Ari and Bisk, Yonatan and Farhadi, Ali and Choi, Yejin},
-  journal={arXiv preprint arXiv:1905.07830},
-  year={2019}
-}
-
-@article{hendrycks2020measuring,
-  title={Measuring massive multitask language understanding},
-  author={Hendrycks, Dan and Burns, Collin and Kadavath, Saurav and Arora, Akul and Basart, Steven and Tang, Eric and Song, Dawn and Steinhardt, Jacob},
-  journal={arXiv preprint arXiv:2009.03300},
-  year={2020}
-}
-
-@article{lin2021truthfulqa,
-  title={TruthfulQA: Measuring how models mimic human falsehoods},
-  author={Lin, Stephanie and Hilton, Jacob and Evans, Owain},
-  journal={arXiv preprint arXiv:2109.07958},
-  year={2021}
-}
-
-@misc{huggingface_mmlu_leaderboard,
-  title={Evaluating MMLU Leaderboard},
-  note={https://huggingface.co/blog/evaluating-mmlu-leaderboard}
-}
-```
-
-## Updated Document with BibTeX Keys
-
-```markdown
-# Developing a Large Language Model: An Overview
+## Introduction
 
 While prompt engineering, Retrieval-Augmented Generation (RAG), and fine-tuning approaches can handle the majority of LLM use cases, there are situations where it may make sense to build a large language model (LLM) from scratch. This white paper reviews the key aspects of developing a foundational LLM based on the experiences with models such as GPT-3, LLaMA, Falcon, and others.
 
-Historically, training large-scale language models (10B+ parameters) was an esoteric activity reserved for AI researchers. However, post-ChatGPT, the environment has changed, with businesses and organizations showing interest in developing their custom LLMs [bloomberg_gpt]. Although this is unnecessary for over
-
- 99% of LLM applications, understanding the process and knowing when it makes sense to build such models is beneficial.
+Historically, training large-scale language models (10B+ parameters) was an esoteric activity reserved for AI researchers. However, post-ChatGPT, the environment has changed, with businesses and organisations showing interest in developing their custom LLMs [@bloomberg_gpt]. Although this is unnecessary for over 99% of LLM applications, understanding the process and knowing when it makes sense to build such models is beneficial.
 
 ## Financial Considerations
 
-Before diving into the technical aspects of LLM development, it is crucial to consider the financial costs. Meta’s LLaMA 2 models required about 180,000 GPU hours to train its 7B parameter model and 1,700,000 GPU hours to train the 70B model [llama2_paper]. Translating this into commercial cloud computing costs, an NVIDIA A100 GPU, used for training LLaMA 2 models, costs around $1–2 per GPU hour. Therefore, a ~10B parameter model costs about $150,000 to train, while a ~100B parameter model costs approximately $1,500,000.
+Before diving into the technical aspects of LLM development, it is crucial to consider the financial costs. Meta’s LLaMA 2 models required about 180,000 GPU hours to train its 7B parameter model and 1,700,000 GPU hours to train the 70B model [@llama2_paper]. Translating this into commercial cloud computing costs, an NVIDIA A100 GPU, used for training LLaMA 2 models, costs around $1–2 per GPU hour. Therefore, a ~10B parameter model costs about $150,000 to train, while a ~100B parameter model costs approximately $1,500,000.
 
-Alternatively, one could buy the GPUs instead of renting them. The cost of training would then include the price of the A100 GPUs and the marginal energy costs for model training. An A100 GPU costs about $10,000, and a cluster of 1000 GPUs would amount to approximately $10,000,000. Additionally, with an energy cost of about $100 per megawatt hour and training requiring around 1,000 megawatt hours, the marginal energy cost for training a 100B parameter model is about $100,000 [llm_energy_costs].
+Alternatively, one could buy the GPUs instead of renting them. The cost of training would then include the price of the A100 GPUs and the marginal energy costs for model training. An A100 GPU costs about $10,000, and a cluster of 1000 GPUs would amount to approximately $10,000,000. Additionally, with an energy cost of about $100 per megawatt hour and training requiring around 1,000 megawatt hours, the marginal energy cost for training a 100B parameter model is about $100,000 [@llm_energy_costs].
 
 These costs do not include funding a team of ML engineers, data engineers, data scientists, and others needed for model development, which can easily amount to $1,000,000. Hence, training an LLM from scratch is a massive investment, justifiable only if there is a significant potential upside not achievable via prompt engineering or fine-tuning existing models.
 
@@ -251,70 +62,73 @@ The development process of an LLM consists of four key steps:
 
 The quality of an LLM is driven by the quality of its training data. Popular base models have training sets of substantial size:
 
-- GPT-3 (175B): 0.5T tokens [brown2020language]
-- LLaMA (70B): 2T tokens [llama2_paper]
-- Falcon (180B): 3.5T tokens [falcon180b_blog]
+- GPT-3 (175B): 0.5T tokens [@brown2020language]
+- LLaMA (70B): 2T tokens [@llama2_paper]
+- Falcon (180B): 3.5T tokens [@falcon180b_blog]
 
-A trillion words of text equate to about a million novels or a billion news articles. The internet is the most common data source for LLMs, encompassing webpages, books, scientific articles, codebases, and conversational data. Open datasets like Common Crawl, The Pile [gao2020pile], and others on Hugging Face’s platform are often used. Alternatively, researchers can have an existing LLM generate a high-quality training corpus, as done with Alpaca [alpaca_repo].
+A trillion words of text equate to about a million novels or a billion news articles. The internet is the most common data source for LLMs, encompassing web pages, books, scientific articles, code bases, and conversational data. Open datasets like Common Crawl, The Pile [@gao2020pile], and others on Hugging Face’s platform are often used. Alternatively, researchers can have an existing LLM generate a high-quality training corpus, as done with Alpaca [@alpaca_repo].
 
 Preparing the data involves several preprocessing steps:
 
-- **Quality Filtering:** Removing low-quality text using classifier-based or heuristic-based approaches [zhao2023survey].
-- **De-duplication:** Ensuring the same text does not bias the model or disrupt the training process [lee2021dedup].
+- **Quality Filtering:** Removing low-quality text using classifier-based or heuristic-based approaches [@zhao2023survey].
+- **De-duplication:** Ensuring the same text does not bias the model or disrupt the training process [@lee2021dedup].
 - **Privacy Redaction:** Removing personally identifiable information to avoid unintended exposure of sensitive data.
-- **Tokenization:** Translating text into numerical form using algorithms like byte-pair encoding (BPE) [sennrich2015neural].
+- **Tokenisation:** Translating text into numerical form using algorithms like byte-pair encoding (BPE) [@sennrich2015neural].
 
 ### Step 2: Model Architecture
 
-Transformers are the state-of-the-art approach for language modeling [vaswani2017attention]. They consist of two key modules: an encoder and a decoder. These can be standalone or combined, resulting in three types of transformers:
+Transformers are the state-of-the-art approach for language modeling [@vaswani2017attention]. They consist of two key modules: an encoder and a decoder. These can be standalone or combined, resulting in three types of transformers:
 
-1. **Encoder-only:** Suitable for tasks requiring input understanding, such as text classification. Example: BERT [devlin2018bert].
-2. **Decoder-only:** Used for text generation tasks, like GPT-3, LLaMA, and Falcon [zhao2023survey, huggingface_nlp_course].
-3. **Encoder-Decoder:** Combines both modules for tasks like translation and summarization. Example: BART [lewis2019bart].
+1. **Encoder-only:** Suitable for tasks requiring input understanding, such as text classification. Example: BERT [@devlin2018bert].
+2. **Decoder-only:** Used for text generation tasks, like GPT-3, LLaMA, and Falcon [@zhao2023survey, huggingface_nlp_course].
+3. **Encoder-Decoder:** Combines both modules for tasks like translation and summarisation. Example: BART [@lewis2019bart].
 
 Other design choices include:
 
-- **Residual Connections:** Improve training stability and performance by allowing intermediate values to bypass hidden layers [he2016deep].
-- **Layer Normalization:** Speeds up training and makes it more stable [ba2016layer].
-- **Activation Functions:** Introduce non-linearities to capture complex mappings (e.g., GeLU, ReLU) [zhao2023survey].
-- **Position Embeddings:** Capture token positions in the model’s representation of text [vaswani2017attention, shaw2018self].
+- **Residual Connections:** Improve training stability and performance by allowing intermediate values to bypass hidden layers [@he2016deep].
+- **Layer Normalisation:** Speeds up training and makes it more stable [@ba2016layer].
+- **Activation Functions:** Introduce non-linearities to capture complex mappings (e.g., GeLU, ReLU) [@zhao2023survey].
+- **Position Embeddings:** Capture token positions in the model’s representation of text [@vaswani2017attention, shaw2018self].
 
 ### Step 3: Training at Scale
 
-LLMs are trained via self-supervised learning, predicting the final token in a sequence based on the preceding ones. Scaling up model training involves techniques like mixed precision training, 3D parallelism, and the Zero Redundancy Optimizer (ZeRO).
+LLMs are trained via self-supervised learning, predicting the final token in a sequence based on the preceding ones. Scaling up model training involves techniques like mixed precision training, 3D parallelism, and the sero Redundancy Optimiser (seRO).
 
 **Training Techniques:**
 
-- **Mixed Precision Training:** Uses both 32-bit and 16-bit floating-point data types to reduce computational costs [zhao2023survey, nvidia_mixed_precision].
-- **Parallelization:** Distributes training across multiple GPUs using pipeline, model, and data parallelism [zhao2023survey].
-- **Zero Redundancy Optimizer (ZeRO):** Reduces data redundancy in the optimizer state, gradient, or parameter partitioning [zhao2023survey].
+- **Mixed Precision Training:** Uses both 32-bit and 16-bit floating-point data types to reduce computational costs [@zhao2023survey, nvidia_mixed_precision].
+- **Parallelisation:** Distributes training across multiple GPUs using pipeline, model, and data parallelism [@zhao2023survey].
+- **sero Redundancy Optimiser (seRO):** Reduces data redundancy in the optimiser state, gradient, or parameter partitioning [@zhao2023survey].
 
 **Training Stability:**
 
-- **Checkpointing:** Saves model artifacts to resume training after failures [zhao2023survey].
-- **Weight Decay:** Penalizes large parameter values to avoid overfitting [weight_decay].
-- **Gradient Clipping:** Rescales gradients to prevent the exploding gradient problem [gradient_clipping].
+- **Checkpointing:** Saves model artifacts to resume training after failures [@zhao2023survey].
+- **Weight Decay:** Penalises large parameter values to avoid overfitting [@weight_decay].
+- **Gradient Clipping:** Rescales gradients to prevent the exploding gradient problem [@gradient_clipping].
 
 **Hyperparameters:**
 
-- **Batch Size:** Number of samples processed before updating parameters.
-- **Learning Rate:** Controls optimization step size.
-- **Optimizer:** Defines how to update model parameters.
-- **Dropout:** Zeros out a portion of parameters at random to avoid overfitting [karpathy_lecture].
+- **Batch Sise:** Number of samples processed before updating parameters.
+- **Learning Rate:** Controls optimisation step size.
+- **Optimiser:** Defines how to update model parameters.
+- **Dropout:** zeros out a portion of parameters at random to avoid over fitting [@karpathy_lecture].
 
 ### Step 4: Evaluation
 
 Model development is iterative, involving repeated evaluation of model performance on a set of tasks. Common benchmarks include:
 
-- **ARC:** Grade-school level multiple-choice science questions [clark2018think].
-- **Hellaswag:** Commonsense natural language inference tasks [zellers2019hellaswag].
-- **MMLU:** World knowledge and problem-solving tasks [hendrycks2020measuring].
-- **TruthfulQA:** Evaluates model truthfulness against common misconceptions [lin2021truthfulqa].
+- **ARC:** Grade-school level multiple-choice science questions [@clark2018think].
+- **Hellaswag:** Commonsense natural language inference tasks [@zellers2019hellaswag].
+- **MMLU:** World knowledge and problem-solving tasks [@hendrycks2020measuring].
+- **TruthfulQA:** Evaluates model truthfulness against common misconceptions [@lin2021truthfulqa].
 
-Evaluations can be done using prompt templates, human evaluation, or NLP metrics like Perplexity, BLEU, or ROGUE scores. An auxiliary fine-tuned LLM can also be used for comparisons, as demonstrated by GPT-judge [lin2021truthfulqa].
+Evaluations can be done using prompt templates, human evaluation, or NLP metrics like Perplexity, BLEU, or ROGUE scores. An auxiliary fine-tuned LLM can also be used for comparisons, as demonstrated by GPT-judge [@lin2021truthfulqa].
 
 ## Conclusion
 
-Building an LLM from scratch involves significant technical and financial investments. However, understanding this process can help determine when such an endeavor is justified and what the key considerations are. Whether leveraging existing models or building new ones, the goal is to develop an AI solution that effectively addresses the target application.
+Building an LLM from scratch involves significant technical and financial investments. However, understanding this process can help determine when such an endeavour is justified and what the key considerations are. Whether leveraging existing models or building new ones, the goal is to develop an AI solution that effectively addresses the target application.
 
-**References:**
+### References
+
+::: {#refs}
+:::

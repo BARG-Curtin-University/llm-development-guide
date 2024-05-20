@@ -104,7 +104,6 @@ dmypy.json
 
 # Local Quarto outputs
 _*.html
-*.qmd
 
 # Python debug files
 *.pdb
